@@ -31,6 +31,8 @@ jobs:
       - name: Create new branch and commit changes
         run: |
           BRANCH_NAME="random-string-$UUID"
+          echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
+
           git checkout -b $BRANCH_NAME
           git add UUID
           git commit -m "New UUID: $UUID"
