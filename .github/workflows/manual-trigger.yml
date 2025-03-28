@@ -27,10 +27,10 @@ jobs:
 
       - name: Create new branch and commit changes
         run: |
-          BRANCH_NAME="random-string-$(date +%s)"
+          BRANCH_NAME="random-string-$UUID"
           git checkout -b $BRANCH_NAME
-          git add random-string.txt
-          git commit -m "Add random string file"
+          git add UUID
+          git commit -m "New UUID: $UUID"
           git push origin $BRANCH_NAME
 
       - name: Create Pull Request
@@ -39,6 +39,6 @@ jobs:
           PR_BODY="This PR adds a file with a random string."
           PR_BRANCH=$BRANCH_NAME
           PR_BASE_BRANCH="main"
-          PR_HEAD_BRANCH="random-string-$(date +%s)"
-          PR_URL=$(curl -s -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" -d "{\"title\":\"$PR_TITLE\",\"body\":\"$PR_BODY\",\"head\":\"$PR_HEAD_BRANCH\",\"base\":\"$PR_BASE_BRANCH\"}" "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls" | jq -r .html_url)
-          echo "Created PR: $PR_URL"
+          PR_URL=$(curl -s -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" -d "{\"title\":\"$PR_TITLE\",\"body\":\"$PR_BODY\",\"head\":\"$PR_BRANCH\",\"base\":\"$PR_BASE_BRANCH\"}" "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls" | jq -r .html_url)
+
+          echo "Pull Request created: $PR_URL"
