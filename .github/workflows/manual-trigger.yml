@@ -20,8 +20,8 @@ jobs:
       - name: Generate random string and create file
         run: |
           UUID=$(uuidgen)
-          echo $UUID > UUID
           echo "Generated UUID: $UUID"
+          echo "UUID=$UUID" >> $GITHUB_ENV
 
       - name: Configure Git
         run: |
