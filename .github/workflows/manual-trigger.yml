@@ -1,0 +1,44 @@
+name: Manual Trigger Random String PR
+
+on:
+  workflow_dispatch: # Allows manual triggering of the workflow
+
+jobs:
+  create-pr:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Generate random string and create file
+        run: |
+          UUID=$(uuidgen)
+          echo $UUID > UUID
+          echo "Generated UUID: $UUID"
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Create new branch and commit changes
+        run: |
+          BRANCH_NAME="random-string-$(date +%s)"
+          git checkout -b $BRANCH_NAME
+          git add random-string.txt
+          git commit -m "Add random string file"
+          git push origin $BRANCH_NAME
+
+      - name: Create Pull Request
+        run: |
+          PR_TITLE="Add random string file"
+          PR_BODY="This PR adds a file with a random string."
+          PR_BRANCH=$BRANCH_NAME
+          PR_BASE_BRANCH="main"
+          PR_HEAD_BRANCH="random-string-$(date +%s)"
+          PR_URL=$(curl -s -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" -d "{\"title\":\"$PR_TITLE\",\"body\":\"$PR_BODY\",\"head\":\"$PR_HEAD_BRANCH\",\"base\":\"$PR_BASE_BRANCH\"}" "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls" | jq -r .html_url)
+          echo "Created PR: $PR_URL"
