@@ -7,6 +7,7 @@ jobs:
   create-pr:
     permissions:
       contents: write
+      pull-requests: write
 
     runs-on: ubuntu-latest
     defaults:
@@ -23,11 +24,6 @@ jobs:
           echo $UUID > UUID
           echo "Generated UUID: $UUID"
           echo "UUID=$UUID" >> $GITHUB_ENV
-
-      - name: Configure Git
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Create new branch and commit changes
         run: |
