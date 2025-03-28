@@ -5,6 +5,9 @@ on:
 
 jobs:
   create-pr:
+    permissions:
+      contents: write
+
     runs-on: ubuntu-latest
     defaults:
       run:
