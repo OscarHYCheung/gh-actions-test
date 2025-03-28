@@ -39,12 +39,18 @@ jobs:
           git commit -m "New UUID: $UUID"
           git push origin $BRANCH_NAME
 
+      - name: Install GitHub CLI
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gh
+
+      - name: Authenticate GitHub CLI
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+
       - name: Create Pull Request
         run: |
-          PR_TITLE="Add random string file"
-          PR_BODY="This PR adds a file with a random string."
-          PR_BRANCH=$BRANCH_NAME
-          PR_BASE_BRANCH="main"
-          PR_URL=$(curl -s -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" -d "{\"title\":\"$PR_TITLE\",\"body\":\"$PR_BODY\",\"head\":\"$PR_BRANCH\",\"base\":\"$PR_BASE_BRANCH\"}" "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls" | jq -r .html_url)
-
-          echo "Pull Request created: $PR_URL"
+          gh pr create --title "Add random string file" \
+                       --body "This PR adds a file with a random string." \
+                       --head "$BRANCH_NAME" \
+                       --base "main"
